@@ -33,8 +33,20 @@ const CMAKE_PARAMS_IOS: &[(&str, &[(&str, &str)])] = &[
         ("CMAKE_OSX_ARCHITECTURES", "arm64"),
         ("CMAKE_OSX_SYSROOT", "iphoneos"),
     ]),
+    ("arm", &[
+        ("CMAKE_OSX_ARCHITECTURES", "armv7"),
+        ("CMAKE_OSX_SYSROOT", "iphoneos"),
+    ]),
+    ("armv7s", &[
+        ("CMAKE_OSX_ARCHITECTURES", "armv7s"),
+        ("CMAKE_OSX_SYSROOT", "iphoneos"),
+    ]),
     ("x86_64", &[
         ("CMAKE_OSX_ARCHITECTURES", "x86_64"),
+        ("CMAKE_OSX_SYSROOT", "iphonesimulator"),
+    ]),
+    ("x86", &[
+        ("CMAKE_OSX_ARCHITECTURES", "i386"),
         ("CMAKE_OSX_SYSROOT", "iphonesimulator"),
     ]),
 ];
@@ -81,6 +93,7 @@ fn get_boringssl_platform_output_path() -> String {
 ///
 /// It will add platform-specific parameters if needed.
 fn get_boringssl_cmake_config() -> cmake::Config {
+    let target = std::env::var("TARGET").unwrap();
     let arch = std::env::var("CARGO_CFG_TARGET_ARCH").unwrap();
     let os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
     let pwd = std::env::current_dir().unwrap();
@@ -123,12 +136,12 @@ fn get_boringssl_cmake_config() -> cmake::Config {
 
         "ios" => {
             for (ios_arch, params) in CMAKE_PARAMS_IOS {
-                if *ios_arch == arch {
+                if (*ios_arch == arch && *ios_arch != "armv7s") || (arch == "arm" && *ios_arch == "armv7s" && target == "armv7s-apple-ios") {
                     for (name, value) in *params {
                         eprintln!("ios arch={} add {}={}", arch, name, value);
                         boringssl_cmake.define(name, value);
                     }
-                }
+		}
             }
 
             // Bitcode is always on.
