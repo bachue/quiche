@@ -1100,6 +1100,8 @@ pub struct Connection {
 
     /// Whether to emit DATAGRAM frames in the next packet.
     emit_dgram: bool,
+
+    do_ping: Option<()>,
 }
 
 /// Creates a new server-side connection.
@@ -1439,6 +1441,7 @@ impl Connection {
             ),
 
             emit_dgram: true,
+            do_ping: None,
         });
 
         if let Some(odcid) = odcid {
@@ -2243,6 +2246,10 @@ impl Connection {
         self.ack_eliciting_sent = false;
 
         Ok(read)
+    }
+
+    pub fn send_ping(&mut self) {
+        self.do_ping = Some(());
     }
 
     /// Writes a single QUIC packet to be sent to the peer.
@@ -3062,10 +3069,11 @@ impl Connection {
         self.emit_dgram = !dgram_emitted;
 
         // Create PING for PTO probe if no other ack-elicitng frame is sent.
-        if self.recovery.loss_probes[epoch] > 0 &&
-            !ack_eliciting &&
-            left >= 1 &&
-            !is_closing
+        if !ack_eliciting
+            && left >= 1
+            && !is_closing
+            && (self.recovery.loss_probes[epoch] > 0
+                || self.do_ping.take().is_some())
         {
             let frame = frame::Frame::Ping;
 

@@ -285,6 +285,8 @@ typedef struct {
 ssize_t quiche_conn_send(quiche_conn *conn, uint8_t *out, size_t out_len,
                          quiche_send_info *out_info);
 
+void quiche_conn_send_ping(quiche_conn *conn);
+
 // Reads contiguous data from a stream.
 ssize_t quiche_conn_stream_recv(quiche_conn *conn, uint64_t stream_id,
                                 uint8_t *out, size_t buf_len, bool *fin);
