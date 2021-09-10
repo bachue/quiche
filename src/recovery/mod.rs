@@ -49,7 +49,7 @@ const TIME_THRESHOLD: f64 = 9.0 / 8.0;
 
 const GRANULARITY: Duration = Duration::from_millis(1);
 
-const INITIAL_RTT: Duration = Duration::from_millis(333);
+const INITIAL_RTT: Duration = Duration::from_millis(288);
 
 const PERSISTENT_CONGESTION_THRESHOLD: u32 = 3;
 
