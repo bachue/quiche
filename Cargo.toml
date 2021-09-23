@@ -72,7 +72,10 @@ url = "1"
 debug = true
 
 [profile.release]
-debug = true
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
 
 [lib]
 crate-type = ["lib", "staticlib", "cdylib"]
