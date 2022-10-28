@@ -311,6 +311,8 @@ ssize_t quiche_conn_send(quiche_conn *conn, uint8_t *out, size_t out_len,
 // Returns the size of the send quantum, in bytes.
 size_t quiche_conn_send_quantum(quiche_conn *conn);
 
+void quiche_conn_send_ping(quiche_conn *conn);
+
 // Reads contiguous data from a stream.
 ssize_t quiche_conn_stream_recv(quiche_conn *conn, uint64_t stream_id,
                                 uint8_t *out, size_t buf_len, bool *fin);
